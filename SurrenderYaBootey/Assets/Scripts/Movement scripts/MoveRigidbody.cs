@@ -1,17 +1,23 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using UnityEngine;
 
 public class MoveRigidbody : MonoBehaviour
 {
     // Start is called before the first frame update
     public float speed;
-    private Rigidbody rb;
+    GameObject target;
 
+    private Vector3 cannonBallOffset;
+    private Rigidbody rb;
+    private bool pickedUp;
 
     public void Start()
     {
         rb = GetComponent<Rigidbody>();
+
+        cannonBallOffset = new Vector3(1, 1, 0);
     }
 
 
@@ -24,5 +30,36 @@ public class MoveRigidbody : MonoBehaviour
         Vector3 tempVect = new Vector3(h, 0, v);
         tempVect = tempVect.normalized * speed * Time.deltaTime;
         rb.MovePosition(transform.position + tempVect);
+
+        if (pickedUp)
+        {
+            target.transform.position = transform.position + cannonBallOffset;
+
+            if (Input.GetButtonUp("Jump"))
+            {
+                pickedUp = false;
+                target = null;
+            }
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "CannonBall" && !pickedUp)
+            target = other.gameObject;
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (target != null)
+        {
+            if (Input.GetButtonDown("Jump") && !pickedUp)
+            {
+                pickedUp = true;
+                target.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
+            }
+       
+        }
+
     }
 }
