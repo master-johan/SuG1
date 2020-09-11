@@ -45,6 +45,8 @@ public class MoveRigidbody : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+
+        
         if (other.tag == "CannonBall" && !pickedUp)
             target = other.gameObject;
     }
